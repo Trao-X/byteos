@@ -1,0 +1,6 @@
+*.o
+*.elf
+*.bin
+byteos
+cum
+cum2
