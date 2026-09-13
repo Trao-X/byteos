@@ -1,4 +1,4 @@
-<img width="999" height="999" alt="Logo (4)" src="https://github.com/user-attachments/assets/a8c3e7ef-c88a-4c7a-8d6c-3ff36cd6a040" />
+<img width="512" height="512" alt="Logo (4)" src="https://github.com/user-attachments/assets/a8c3e7ef-c88a-4c7a-8d6c-3ff36cd6a040" />
 
 
 hi im v3x and this is my first non vibecoded os!
