@@ -1,6 +1,7 @@
 #include <stdint.h>
 
-// byteos 1.0.0 armv6-m stm32g0 for byteos development board & qemu
+// byteos 1.1.0 armv6-m stm32g0 for byteos development board
+// last update added uart input base
 // credits: v3x, osdev
 
 volatile uint32_t* resetandcockcontrol_ioenablereg = (volatile uint32_t*)0x40021034;
@@ -64,7 +65,6 @@ while (1) {
 }
 
 // the while(1) part is entirely copied because i do not understand c
-
 // kill yourselfffffffff took me like 30 mins of writing for 24 lines, have to order pcb v1 soon
 // hi so im back and 50 lines and 30 more mins!
 //fuck c
