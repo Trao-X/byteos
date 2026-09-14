@@ -1,8 +1,9 @@
 #include <stdint.h>
 #include <stddef.h> // im only including this because the creator of the strcmp is a fuckign chud who uses null instead of nullptr
-// byteos 1.1.0 armv6-m stm32g0 for byteos development board
-// last update added uart input and 1 command
+// byteos 1.1.1 armv6-m stm32g0 for byteos development board
+// last update made it so no memory overflow when maxinput passed
 // credits: v3x, osdev, embeddedartistry.github.io
+
 
 volatile uint32_t* resetandcockcontrol_ioenablereg = (volatile uint32_t*)0x40021034;
 volatile uint32_t* resetandcockcontrol_advancedpenisbusenablereg = (volatile uint32_t*)0x4002103C;
@@ -95,7 +96,7 @@ return *uartbutsynchronous2_givemefuckingadataregister; // well no fucking shit
 
 }
 
-char maxinput[64];
+char maxinput[1024];
 int howmanycharacterscurrently = 0;
 
 
@@ -113,14 +114,19 @@ void typepls() {
     howmanycharacterscurrently = 0;
     return;
 }
+if (howmanycharacterscurrently < 1023) {
 maxinput[howmanycharacterscurrently] = wtfdidutype;
 howmanycharacterscurrently++;
 pleaseputacharacter(wtfdidutype);
 }
+else {
+    putshitinuart("stop trying to overflow the kernel you fucking chud");
+}
+}
 }
 extern "C" void boskernel() {  // copy pasted idk how to call c but yea ig its right maybe idk // its not copypasted anymore! i learned how to do basic c i guess...
 uart_init();
-putshitinuart("welcome to byteos 1.1.0 designed for byte dev board");
+putshitinuart("welcome to byteos 1.1.1 designed for byte dev board");
 while (1) {
     startanewterm();
     typepls();
