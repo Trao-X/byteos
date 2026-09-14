@@ -25,7 +25,7 @@ void uart_init() {
     *youknowwhatgpiois_altfunreglow |= (1 << 8);
 
     *uartbutsynchronous2_baudratereg = 139;
-    *uartbutsynchronous2_ctrlgreg1yolookthatsaysgreg |= (1 << 3) | (1 << 0);
+    *uartbutsynchronous2_ctrlgreg1yolookthatsaysgreg |= (1 << 3) | (1 << 2) | (1 << 0);
 }
 
 // please tell me this is correct or im jumping off a bridge
@@ -49,9 +49,8 @@ void putshitinuart(const char* okillputshitinuart) {
 volatile uint32_t* uartbutsynchronous2_givemefuckingadataregister = (volatile uint32_t*)0x40004424;
 
 char getmeafuckingcharacter() {
-while (!(*uartbutsynchronous2_interuptstatusregimisspeledinterrupt & (1 << 5))) {
-    return *uartbutsynchronous2_givemefuckingadataregister; // well no fucking shit
-}
+while (!(*uartbutsynchronous2_interuptstatusregimisspeledinterrupt & (1 << 5))) {}
+return *uartbutsynchronous2_givemefuckingadataregister; // well no fucking shit
 
 // i kinda understand this maybe idk
 
