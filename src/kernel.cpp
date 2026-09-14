@@ -126,7 +126,7 @@ else {
 }
 extern "C" void boskernel() {  // copy pasted idk how to call c but yea ig its right maybe idk // its not copypasted anymore! i learned how to do basic c i guess...
 uart_init();
-putshitinuart("welcome to byteos 1.1.1 designed for byte dev board");
+putshitinuart("welcome to byteos 1.1.1 designed for byte dev board\r\n");
 while (1) {
     startanewterm();
     typepls();
