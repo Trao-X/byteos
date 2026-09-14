@@ -1,8 +1,8 @@
 #include <stdint.h>
-
+#include <stddef.h> // im only including this because the creator of the strcmp is a fuckign chud who uses null instead of nullptr
 // byteos 1.1.0 armv6-m stm32g0 for byteos development board
-// last update added uart input base
-// credits: v3x, osdev
+// last update added uart input and 1 command
+// credits: v3x, osdev, embeddedartistry.github.io
 
 volatile uint32_t* resetandcockcontrol_ioenablereg = (volatile uint32_t*)0x40021034;
 volatile uint32_t* resetandcockcontrol_advancedpenisbusenablereg = (volatile uint32_t*)0x4002103C;
@@ -12,7 +12,43 @@ volatile uint32_t* uartbutsynchronous2_ctrlgreg1yolookthatsaysgreg = (volatile u
 volatile uint32_t* uartbutsynchronous2_baudratereg = (volatile uint32_t*)0x4000440C;
 volatile uint32_t* uartbutsynchronous2_interuptstatusregimisspeledinterrupt = (volatile uint32_t*)0x4000441C;
 volatile uint32_t* uartbutsynchronous2_transmitdatareg = (volatile uint32_t*)0x40004428;
-// that was a FUCKTON of copy and pasting the binary
+// that was a FUCKTON of copy and pasting the hex
+
+// strcmp from embeddedartistry.github.io
+
+ int strcmp(const char* s1, const char* s2)
+ {
+     int r = -1;
+
+     if(s1 == s2)
+     {
+         // short circuit - same string
+         return 0;
+     }
+
+     // I don't want to panic with a NULL ptr - we'll fall through and fail w/ -1
+     if(s1 != NULL && s2 != NULL)
+     {
+         // iterate through strings until they don't match or s1 ends (null-term)
+         for(; *s1 == *s2; ++s1, ++s2)
+         {
+             if(*s1 == 0)
+             {
+                 r = 0;
+                 break;
+             }
+         }
+
+         // handle case where we didn't break early - set return code.
+         if(r != 0)
+         {
+             r = *(const char*)s1 - *(const char*)s2;
+         }
+     }
+
+     return r;
+ }
+
 
 void uart_init() {
 
@@ -26,6 +62,9 @@ void uart_init() {
 
     *uartbutsynchronous2_baudratereg = 139;
     *uartbutsynchronous2_ctrlgreg1yolookthatsaysgreg |= (1 << 3) | (1 << 2) | (1 << 0);
+    *youknowwhatgpiois_modereg &= ~(3 << 6);
+    *youknowwhatgpiois_modereg |= (2 << 6);
+    *youknowwhatgpiois_altfunreglow |= (1 << 12); // uart init or smht idfk
 }
 
 // please tell me this is correct or im jumping off a bridge
@@ -56,21 +95,48 @@ return *uartbutsynchronous2_givemefuckingadataregister; // well no fucking shit
 
 }
 
-extern "C" void boskernel() {  // copy pasted idk how to call c but yea ig its right maybe idk
+char maxinput[64];
+int howmanycharacterscurrently = 0;
+
+
+void startanewterm() {
+putshitinuart("byteW>");
+}
+
+
+
+void typepls() {
+    while (1) {
+    char wtfdidutype = getmeafuckingcharacter();
+    if (wtfdidutype == '\n' || wtfdidutype == '\r') {
+    maxinput[howmanycharacterscurrently] = '\0';
+    howmanycharacterscurrently = 0;
+    return;
+}
+maxinput[howmanycharacterscurrently] = wtfdidutype;
+howmanycharacterscurrently++;
+pleaseputacharacter(wtfdidutype);
+}
+}
+extern "C" void boskernel() {  // copy pasted idk how to call c but yea ig its right maybe idk // its not copypasted anymore! i learned how to do basic c i guess...
 uart_init();
-putshitinuart("welcome to byteos 1.0.0");
+putshitinuart("welcome to byteos 1.1.0 designed for byte dev board");
 while (1) {
-    pleaseputacharacter(getmeafuckingcharacter());
+    startanewterm();
+    typepls();
+    if (strcmp(maxinput, "help") == 0) {
+        putshitinuart("\r\ngo fuck yourself im not helping you you fucking chud\r\n");
+    }
 }
 
 // the while(1) part is entirely copied because i do not understand c
 // kill yourselfffffffff took me like 30 mins of writing for 24 lines, have to order pcb v1 soon
 // hi so im back and 50 lines and 30 more mins!
-//fuck c
+// fuck c cpp better
 // we have added uart input
-
-
-//penis
+// couple of hours for uart input, well not really probably like 30 mins again but like i split it many times
+// penis
+// i passed river in 0.5x speed, ignore this, 15.09.2026
 
 
 }
