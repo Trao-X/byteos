@@ -45,8 +45,33 @@ void putshitinuart(const char* okillputshitinuart) {
 }
 }
 
+volatile uint32_t* uartbutsynchronous2_givemefuckingadataregister = (volatile uint32_t*)0x40004424;
+
+char getmeafuckingcharacter() {
+while (!(*uartbutsynchronous2_interuptstatusregimisspeledinterrupt & (1 << 5))) {
+    return *uartbutsynchronous2_givemefuckingadataregister; // well no fucking shit
+}
+
+// i kinda understand this maybe idk
+
+}
+
 extern "C" void boskernel() {  // copy pasted idk how to call c but yea ig its right maybe idk
 uart_init();
-putshitinuart("welcome to byteos 1.0.0"); // kill yourselfffffffff took me like 30 mins of writing for 24 lines, have to order pcb v1 soon
+putshitinuart("welcome to byteos 1.0.0");
+while (1) {
+    pleaseputacharacter(getmeafuckingcharacter());
+}
+
+// the while(1) part is entirely copied because i do not understand c
+
+// kill yourselfffffffff took me like 30 mins of writing for 24 lines, have to order pcb v1 soon
 // hi so im back and 50 lines and 30 more mins!
+//fuck c
+// we have added uart input
+
+
+//penis
+
+
 }
