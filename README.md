@@ -5,7 +5,7 @@
 
 ## Support
 
-You need a board with the `STM32C031F6P6 MCU` or `Renode` can be used
+A board with the `STM32C031F6P6 MCU` is required or `Renode` can be used insted.
 
 ## Building
 
