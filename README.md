@@ -5,7 +5,7 @@
 
 ## Support
 
-A board with the `STM32C031F6P6 MCU` is required or `Renode` can be used insted.
+A board with the `STM32C031F6P6 MCU` is required or `Renode` can be used instead.
 
 ## Building
 
@@ -25,6 +25,7 @@ Currently byteos only has a single command and that is `help`
 
 ## Credits
 * **wagiminator/Stefan Wagner** - for his original board that I based my board off of.
+* **zalanwastaken** - for writing the readme
 
 ## Licenses used: 
 * MIT (byteos, embedded artistry's strcmp)
