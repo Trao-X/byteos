@@ -42,10 +42,6 @@ int strcmp(const char *s1, const char *s2) {
 
   return r;
 }
-
-// let me save here
-// rcc = reset and clock control good good
-
 void uart_init() {
 
   *rcc_iopenr |= (1 << 0);   // reset and clock control io enable reg afaik
@@ -54,25 +50,19 @@ void uart_init() {
   *gpio_moder &= ~(3 << 4); // gpio mode register, i have fuckall idea what a mode register is
   *gpio_moder |= (2 << 4);
 
-  *gpio_afrl |= (1 << 8); // gpio alternate low register, actually nvm alternate
-                          // low FUNCTION
+  *gpio_afrl |= (1 << 8); // gpio alternate low register, actually nvm alternate low FUNCTION
 
-  *usart2_brr = 139; // uart with synchronous 2 baud rate register, prob
-                     // something that has to do with uartttt
-  *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg,
-              // bro my rename to propfessionalize naming was so fucking shit
+  *usart2_brr = 139; // uart with synchronous 2 baud rate register, prob something that has to do with uartttt
+  *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg  // bro my rename to propfessionalize naming was so fucking shit
   *gpio_moder &= ~(3 << 6); // gpio mode register
   *gpio_moder |= (2 << 6);  // 2x
   *gpio_afrl |= (1 << 12);  // hm
 }
 
 void pleaseputacharacter(char okillputacharacter) {
-  // *uartbos = okillputacharacter; this is so fucking stupid and i like half
-  // understand it maybe idk (this is what i said before switching to the other
-  // chip and now i dont understand it at fucking all!)
-  while (!(*usart2_isr & (1 << 7))) {
-  } // this is probably something idk it sets bit :thumbsup: ok nvm it turns out
-    // ittt reads a bit and isolates bit 7 for testing
+  // *uartbos = okillputacharacter; this is so fucking stupid and i like half understand it maybe idk (this is what i said before switching to the other chip and now i dont understand it at fucking all!)
+  while (!(*usart2_isr & (1 << 7))) { // this is probably something idk it sets bit :thumbsup: ok nvm it turns out // ittt reads a bit and isolates bit 7 for testing
+  } 
   *usart2_tdr = okillputacharacter;
 }
 
@@ -80,8 +70,7 @@ void uartcharacterplacement(const char *okillplaceit) {
 
   while (*okillplaceit != '\0') {
     pleaseputacharacter(*okillplaceit);
-    okillplaceit++; // this took me like 10 fucking minutes to figure out + 5
-                    // for the braces
+    okillplaceit++; // this took me like 10 fucking minutes to figure out + 5 for the braces
   }
 }
 
@@ -92,10 +81,8 @@ char givcharacter() {
   while (!(*usart2_isr & (1 << 5))) {
   }
   return *usart2_rdr; // well no fucking shit
-
-  // i kinda understand this maybe idk
 }
-
+  // i kinda understand this maybe idk
 char maxinput[1024];
 int howmanycharacterscurrently = 0;
 
@@ -119,9 +106,9 @@ void typepls() {
     }
   }
 }
-extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its
-                              // right maybe idk // its not copypasted anymore!
-                              // i learned how to do basic c i guess...
+extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its not copypasted anymore! learned how to do basic c i guess...
+                             
+
   uart_init();
   uartcharacterplacement(
       "welcome to byteos 1.1.2 designed for byte dev board\r\n");
@@ -133,9 +120,7 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its
     }
   }
 
-  // the while(1) part is entirely copied because i do not understand c // this
-  // is not true anymore! hi so im back and 50 lines and 30 more mins! we have
-  // added uart input couple of hours for uart input, well not really probably
-  // like 30 mins again but like i split it many times i passed river in 0.5x
-  // speed, ignore this, 15.09.2026
+  // the while(1) part is entirely copied because i do not understand c // this is not true anymore! hi so im back and 50 lines and 30 more mins! we have
+  // added uart input couple of hours for uart input, well not really probably like 30 mins again but like i split it many times 
+  // i passed river in 0.5x speed, ignore this, 15.09.2026 
 }
