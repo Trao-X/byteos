@@ -7,14 +7,17 @@ FLAGS = -mcpu=cortex-m0plus -mthumb -ffreestanding -fno-exceptions -fno-rtti -O0
 
 all: byteos.bin
 
+strcmp.o: src/strcmp.cpp
+	$(CXX) $(FLAGS) -c src/strcmp.cpp -o strcmp.o
+
 kernel.o: src/kernel.cpp
 	$(CXX) $(FLAGS) -c src/kernel.cpp -o kernel.o
 
 startup.o: src/startup.cpp
 	$(CXX) $(FLAGS) -c src/startup.cpp -o startup.o
 
-byteos.elf: startup.o kernel.o linker.ld
-	$(CXX) -nostdlib -mcpu=cortex-m0plus -mthumb -T linker.ld startup.o kernel.o -o byteos.elf
+byteos.elf: startup.o kernel.o strcmp.o linker.ld
+	$(CXX) -nostdlib -mcpu=cortex-m0plus -mthumb -T linker.ld startup.o kernel.o strcmp.o -o byteos.elf
 
 byteos.bin: byteos.elf
 	$(OBJCOPY) -O binary byteos.elf byteos.bin

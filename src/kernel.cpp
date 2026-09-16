@@ -1,8 +1,9 @@
-#include <stddef.h> // who uses null instead of nullptr
 #include <stdint.h>
+#include "../include/strcmp.h"
 // byteos 1.1.3 armv6-m stm32g0 for byteos development board
+// the kernel is named bitnl (credits to .n.o.t.a. for that name)
 // last update reprofessionalizing since i decided i was immature 2 days ago
-// credits: v3x, osdev, embeddedartistry.github.io
+// credits: v3x, osdev (credits for software used outside this file in other files)
 
 volatile uint32_t *rcc_iopenr = (volatile uint32_t *)0x40021034;
 volatile uint32_t *rcc_apbenr1 = (volatile uint32_t *)0x4002103C;
@@ -12,36 +13,11 @@ volatile uint32_t *usart2_cr1 = (volatile uint32_t *)0x40004400;
 volatile uint32_t *usart2_brr = (volatile uint32_t *)0x4000440C;
 volatile uint32_t *usart2_isr = (volatile uint32_t *)0x4000441C; // inter status register
 volatile uint32_t *usart2_tdr = (volatile uint32_t *)0x40004428; // transmit data register
+volatile uint32_t *nvic_iser = (volatile uint32_t *)0xE000E100; // iserrrr for the thing interrupts
 // that was a FUCKTON of copy and pasting the hex
 
 // strcmp from embeddedartistry.github.io
 
-int strcmp(const char *s1, const char *s2) {
-  int r = -1;
-
-  if (s1 == s2) {
-    // short circuit - same string
-    return 0;
-  }
-
-  // I don't want to panic with a NULL ptr - we'll fall through and fail w/ -1
-  if (s1 != NULL && s2 != NULL) {
-    // iterate through strings until they don't match or s1 ends (null-term)
-    for (; *s1 == *s2; ++s1, ++s2) {
-      if (*s1 == 0) {
-        r = 0;
-        break;
-      }
-    }
-
-    // handle case where we didn't break early - set return code.
-    if (r != 0) {
-      r = *(const char *)s1 - *(const char *)s2;
-    }
-  }
-
-  return r;
-}
 void uart_init() {
 
   *rcc_iopenr |= (1 << 0);   // reset and clock control io enable reg afaik
@@ -54,11 +30,12 @@ void uart_init() {
 
   *usart2_brr = 104; // uart with synchronous 2 baud rate register, prob // fixed the uhh brr needed to be smaller cuz less mhz
                      // something that has to do with uartttt
-  *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg,
+  *usart2_cr1 |= (1 << 5) | (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg,
               // bro my rename to propfessionalize naming was so fucking shit
   *gpio_moder &= ~(3 << 6); // gpio mode register
   *gpio_moder |= (2 << 6);  // 2x
   *gpio_afrl |= (1 << 12);  // hm
+  *nvic_iser |= (1 << 28);
 }
 
 void pleaseputacharacter(char okillputacharacter) {
@@ -76,15 +53,19 @@ void uartcharacterplacement(const char *okillplaceit) {
   }
 }
 
-volatile uint32_t *usart2_rdr =
-    (volatile uint32_t *)0x40004424; // recieve data register
+volatile uint32_t *usart2_rdr = (volatile uint32_t *)0x40004424; // recieve data register
+
+volatile char storag[64];
+volatile int writeindia = 0;
+volatile int readindia = 0;
 
 char givcharacter() {
-  while (!(*usart2_isr & (1 << 5))) {
+  while (readindia == writeindia) {
   }
-  return *usart2_rdr; // well no fucking shit
+  char okiassignedit = storag[readindia];
+  readindia = (readindia + 1) & 63;
+  return okiassignedit;  // tuff
 }
-  // i kinda understand this maybe idk
 char maxinput[1024];
 int howmanycharacterscurrently = 0;
 
@@ -109,8 +90,7 @@ void typepls() {
       howmanycharacterscurrently++;
       pleaseputacharacter(userinputprobably);
     } else {
-      uartcharacterplacement("stop trying to overflow the kernel, you now may "
-                             "not use the terminal anymore");
+      uartcharacterplacement("stop trying to overflow the kernel, you now may not use the terminal anymore");
     }
   }
 }
@@ -127,10 +107,13 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
       uartcharacterplacement("\r\n");
     }
     else if (strcmp(maxinput, "help") == 0) {
-      uartcharacterplacement("\r\nok so the current commands are: help, neofetch\r\n");
+      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.1.3 kernel: uh i didnt make a name cpu: one of the stm32s\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.1.3 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+    }
+    else if (strcmp(maxinput, "clear") ==  0) {
+      uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
     }
     else {
       uartcharacterplacement("\r\nthat command isnt real!\r\n");
