@@ -117,11 +117,17 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
   while (1) {
     startanewterm();
     typepls();
-    if (strcmp(maxinput, "help") == 0) {
+    if(maxinput[0] == '\0') {
+      uartcharacterplacement("\r\n");
+    }
+    else if (strcmp(maxinput, "help") == 0) {
       uartcharacterplacement("\r\nok so the current commands are: help, neofetch\r\n");
     }
-    if (strcmp(maxinput, "neofetch") == 0) {
+    else if (strcmp(maxinput, "neofetch") == 0) {
       uartcharacterplacement("\r\nos: byteos 1.1.2 kernel: uh i didnt make a name cpu: one of the stm32s\r\n");
+    }
+    else {
+      uartcharacterplacement("\r\nthat command isnt real!\r\n");
     }
   }
 
