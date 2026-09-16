@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "../include/strcmp.h"
-// byteos 1.1.3 armv6-m stm32g0 for byteos development board
+// byteos 1.2.0 armv6-m stm32g0 for byteos development board
 // the kernel is named bitnl (credits to .n.o.t.a. for that name)
 // last update reprofessionalizing since i decided i was immature 2 days ago
 // credits: v3x, osdev (credits for software used outside this file in other files)
@@ -99,7 +99,7 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
 
   uart_init();
   uartcharacterplacement(
-      "welcome to byteos 1.1.3 designed for byte dev board\r\n");
+      "welcome to byteos 1.2.0 designed for byte dev board\r\n");
   while (1) {
     startanewterm();
     typepls();
@@ -110,7 +110,7 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
       uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.1.3 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.2.0 kernel: bitnl cpu: one of the stm32s probably!\r\n");
     }
     else if (strcmp(maxinput, "clear") ==  0) {
       uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
