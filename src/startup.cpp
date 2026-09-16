@@ -9,9 +9,15 @@
 #define zero8 zero7, 0
 #define zero9 zero8, 0
 #define zero10 zero9, 0
+#define zero11 zero10, 0
+#define zero12 zero11, 0
+#define zero13 zero12, 0
+#define zero14 zero13, 0
+
 
 // thx zalan for the idea of using macros instead of spamming zeroes!
 
+extern "C" void systrickcounter();
 extern volatile uint32_t *usart2_rdr; // recieve data register
 extern uint32_t _data_start, _data_end, _data_flash_start;
 extern uint32_t _bss_start, _bss_end;
@@ -63,9 +69,10 @@ void* vector_table[] = {
     (void*)plshandletheresetsalrthx,
     (void*)nonmaskable,
     (void*)hardfault,
+    zero11,
+    (void*)systrickcounter, // gd reference
     zero10,
     zero10,
-    zero10,
-    zero10,
+    zero8,
     (void*)handelr,
 };

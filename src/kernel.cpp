@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "../include/strcmp.h"
-// byteos 1.2.0 armv6-m stm32g0 for byteos development board
+// byteos 1.3.0 armv6-m stm32g0 for byteos development board
 // the kernel is named bitnl (credits to .n.o.t.a. for that name)
 // last update reprofessionalizing since i decided i was immature 2 days ago
 // credits: v3x, osdev (credits for software used outside this file in other files)
@@ -13,7 +13,11 @@ volatile uint32_t *usart2_cr1 = (volatile uint32_t *)0x40004400;
 volatile uint32_t *usart2_brr = (volatile uint32_t *)0x4000440C;
 volatile uint32_t *usart2_isr = (volatile uint32_t *)0x4000441C; // inter status register
 volatile uint32_t *usart2_tdr = (volatile uint32_t *)0x40004428; // transmit data register
-volatile uint32_t *nvic_iser = (volatile uint32_t *)0xE000E100; // iserrrr for the thing interrupts
+volatile uint32_t *nvic_iser = (volatile uint32_t *)0xE000E100; // iserrrr for the thing interruptsz
+// time to start on systrick gd reference
+volatile uint32_t *systrick_reload = (volatile uint32_t *)0xE000E014;
+volatile uint32_t *systrick_current = (volatile uint32_t *)0xE000E018;
+volatile uint32_t *systrick_ctrl = (volatile uint32_t *)0xE000E010;
 // that was a FUCKTON of copy and pasting the hex
 
 // strcmp from embeddedartistry.github.io
@@ -36,6 +40,24 @@ void uart_init() {
   *gpio_moder |= (2 << 6);  // 2x
   *gpio_afrl |= (1 << 12);  // hm
   *nvic_iser |= (1 << 28);
+  *systrick_reload = 11999; // i thought this was 24
+  *systrick_current = 0;
+  *systrick_ctrl |= (1 << 2);
+  *systrick_ctrl |= (1 << 0);
+  *systrick_ctrl |= (1 << 1); // trick??? is that a gd refernece????
+}
+
+volatile uint32_t tiks = 0;
+
+extern "C" void systrickcounter() {
+  tiks++;
+}
+
+
+
+
+uint32_t printshitasdigit() {
+  tiks / 10;
 }
 
 void pleaseputacharacter(char okillputacharacter) {
@@ -50,6 +72,23 @@ void uartcharacterplacement(const char *okillplaceit) {
   while (*okillplaceit != '\0') {
     pleaseputacharacter(*okillplaceit);
     okillplaceit++; // this took me like 10 fucking minutes to figure out + 5 for the braces
+  }
+}
+
+void uint32tonumber(uint32_t number) {
+  char table[11];
+  int counter = 0;
+  while(number != 0) {
+  table[counter] = number % 10 + '0';
+  counter++;
+  number = number / 10; // I FUCKING HATE CPP
+  // ill fucking jump off a bridge if it doesnt work next try
+  }
+  int counterminus1 = counter - 1; // no fucking shit
+  while(counterminus1 >= 0) {
+  pleaseputacharacter(table[counterminus1]);
+  counterminus1 --; // im ENDING IT if this doesnt work
+  // IM GONNA SERIOUSLY FUCKING DO IT
   }
 }
 
@@ -99,7 +138,7 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
 
   uart_init();
   uartcharacterplacement(
-      "welcome to byteos 1.2.0 designed for byte dev board\r\n");
+      "welcome to byteos 1.3.0 designed for byte dev board\r\n");
   while (1) {
     startanewterm();
     typepls();
@@ -110,15 +149,24 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
       uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.2.0 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.3.0 kernel: bitnl cpu: one of the stm32s probably!\r\n");
     }
     else if (strcmp(maxinput, "clear") ==  0) {
       uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
     }
+    else if (strcmp(maxinput, "uptime") == 0) {
+      uartcharacterplacement("\nthe uptime iss "); // this better fucking work OR FUCKINE ELSE
+      uint32tonumber(tiks / 1000);
+      uartcharacterplacement("s");
+      uartcharacterplacement("\r\n"); // now i have FUCKING LINKER ERRORS IM GONNA HAVE AFUCKING MENTAL BREAKDOWN
+ } // IM FUCKING ENDING IT IT DIDNT BOOT
     else {
       uartcharacterplacement("\r\nthat command isnt real!\r\n");
     }
   }
+// FUCK PCPCPPCPCPCPCPCPCPC
+//YESSS IT WORKED
+
 
   // the while(1) part is entirely copied because i do not understand c // this is not true anymore! hi so im back and 50 lines and 30 more mins! we have
   // added uart input couple of hours for uart input, well not really probably like 30 mins again but like i split it many times
