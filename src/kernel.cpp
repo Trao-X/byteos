@@ -57,7 +57,7 @@ void uart_init() {
   *gpio_afrl |= (1 << 8); // gpio alternate low register, actually nvm alternate
                           // low FUNCTION
 
-  *usart2_brr = 139; // uart with synchronous 2 baud rate register, prob
+  *usart2_brr = 104; // uart with synchronous 2 baud rate register, prob // fixed the uhh brr needed to be smaller cuz less mhz
                      // something that has to do with uartttt
   *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg,
               // bro my rename to propfessionalize naming was so fucking shit
@@ -99,7 +99,7 @@ char givcharacter() {
 char maxinput[1024];
 int howmanycharacterscurrently = 0;
 
-void startanewterm() { uartcharacterplacement("byteW>"); }
+void startanewterm() { uartcharacterplacement("\x1b[32mbyteW>\x1b[0m"); } // hacker green prompt
 
 void typepls() {
   while (1) {
@@ -129,7 +129,10 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its
     startanewterm();
     typepls();
     if (strcmp(maxinput, "help") == 0) {
-      uartcharacterplacement("\r\nok so the current commands are: help\r\n");
+      uartcharacterplacement("\r\nok so the current commands are: help, neofetch\r\n");
+    }
+    if (strcmp(maxinput, "neofetch") == 0) {
+      uartcharacterplacement("\r\nos: byteos 1.1.2 kernel: uh i didnt make a name cpu: one of the stm32s\r\n");
     }
   }
 
