@@ -1,6 +1,6 @@
 #include <stddef.h> // who uses null instead of nullptr
 #include <stdint.h>
-// byteos 1.1.2 armv6-m stm32g0 for byteos development board
+// byteos 1.1.3 armv6-m stm32g0 for byteos development board
 // last update reprofessionalizing since i decided i was immature 2 days ago
 // credits: v3x, osdev, embeddedartistry.github.io
 
@@ -98,7 +98,13 @@ void typepls() {
       howmanycharacterscurrently = 0;
       return;
     }
-    if (howmanycharacterscurrently < 1023) {
+    else if (userinputprobably == '\b' || userinputprobably == 0x7f) {
+      if(howmanycharacterscurrently > 0 ) {
+      howmanycharacterscurrently--;
+      uartcharacterplacement("\b \b");
+      }
+    }
+    else if (howmanycharacterscurrently < 1023) {
       maxinput[howmanycharacterscurrently] = userinputprobably;
       howmanycharacterscurrently++;
       pleaseputacharacter(userinputprobably);
@@ -113,7 +119,7 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
 
   uart_init();
   uartcharacterplacement(
-      "welcome to byteos 1.1.2 designed for byte dev board\r\n");
+      "welcome to byteos 1.1.3 designed for byte dev board\r\n");
   while (1) {
     startanewterm();
     typepls();
@@ -124,7 +130,7 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
       uartcharacterplacement("\r\nok so the current commands are: help, neofetch\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.1.2 kernel: uh i didnt make a name cpu: one of the stm32s\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.1.3 kernel: uh i didnt make a name cpu: one of the stm32s\r\n");
     }
     else {
       uartcharacterplacement("\r\nthat command isnt real!\r\n");
