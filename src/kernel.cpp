@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "../include/strcmp.h"
-// byteos 1.3.0 armv6-m stm32g0 for byteos development board
+// byteos 1.3.1 armv6-m stm32g0 for byteos development board
 // the kernel is named bitnl (credits to .n.o.t.a. for that name)
 // last update reprofessionalizing since i decided i was immature 2 days ago
 // credits: v3x, osdev (credits for software used outside this file in other files)
@@ -53,13 +53,6 @@ extern "C" void systrickcounter() {
   tiks++;
 }
 
-
-
-
-uint32_t printshitasdigit() {
-  tiks / 10;
-}
-
 void pleaseputacharacter(char okillputacharacter) {
   // *uartbos = okillputacharacter; this is so fucking stupid and i like half understand it maybe idk (this is what i said before switching to the other chip and now i dont understand it at fucking all!)
   while (!(*usart2_isr & (1 << 7))) { // this is probably something idk it sets bit :thumbsup: ok nvm it turns out // ittt reads a bit and isolates bit 7 for testing
@@ -110,11 +103,20 @@ int howmanycharacterscurrently = 0;
 
 void startanewterm() { uartcharacterplacement("\x1b[32mbyteW>\x1b[0m"); } // hacker green prompt
 
+void copyshit(char* destination, const char* sourc) {
+  while ((*destination++ = *sourc++));
+}
+
+char uparrowshit[1024];
+
+
 void typepls() {
   while (1) {
     char userinputprobably = givcharacter();
     if (userinputprobably == '\n' || userinputprobably == '\r') {
+
       maxinput[howmanycharacterscurrently] = '\0';
+      copyshit(uparrowshit, maxinput);
       howmanycharacterscurrently = 0;
       return;
     }
@@ -124,42 +126,75 @@ void typepls() {
       uartcharacterplacement("\b \b");
       }
     }
+    else if (userinputprobably == '\x1b') {
+    char getinputig = givcharacter();
+    if (getinputig == '[')    {
+    getinputig = givcharacter();
+    if (getinputig == 'A') {
+    uartcharacterplacement(uparrowshit);
+    }
+    }
+    }
+
     else if (howmanycharacterscurrently < 1023) {
       maxinput[howmanycharacterscurrently] = userinputprobably;
       howmanycharacterscurrently++;
       pleaseputacharacter(userinputprobably);
-    } else {
+    }
+    else {
       uartcharacterplacement("stop trying to overflow the kernel, you now may not use the terminal anymore");
     }
   }
 }
+
+
+int echolaid(const char* lllllline, const char* prefik) {
+    while (*prefik != '\0') {
+      if (*lllllline != *prefik) {
+        return 0;
+      }
+      lllllline++;
+      prefik++;
+    }
+    return 1;
+}
+
 extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its not copypasted anymore! learned how to do basic c i guess...
 
 
   uart_init();
   uartcharacterplacement(
-      "welcome to byteos 1.3.0 designed for byte dev board\r\n");
+      "welcome to byteos 1.3.1 designed for byte dev board\r\n");
   while (1) {
     startanewterm();
     typepls();
-    if(maxinput[0] == '\0') {
-      uartcharacterplacement("\r\n");
-    }
-    else if (strcmp(maxinput, "help") == 0) {
-      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear\r\n");
+    if (strcmp(maxinput, "help") == 0) {
+      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear, uptime, echo\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.3.0 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.3.1 kernel: bitnl cpu: one of the stm32s probably!\r\n");
     }
     else if (strcmp(maxinput, "clear") ==  0) {
       uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
     }
     else if (strcmp(maxinput, "uptime") == 0) {
       uartcharacterplacement("\nthe uptime iss "); // this better fucking work OR FUCKINE ELSE
+      if(tiks < 60000) {
       uint32tonumber(tiks / 1000);
       uartcharacterplacement("s");
+      }
+      else if (tiks > 60000) {
+        uint32tonumber((tiks / 1000) / 60);
+        uartcharacterplacement("m");
+      }
+
       uartcharacterplacement("\r\n"); // now i have FUCKING LINKER ERRORS IM GONNA HAVE AFUCKING MENTAL BREAKDOWN
  } // IM FUCKING ENDING IT IT DIDNT BOOT
+    else if (echolaid(maxinput, "echo ") == 1) {
+      uartcharacterplacement("\r\n");
+      uartcharacterplacement(maxinput + 5);
+      uartcharacterplacement("\r\n"); // i fucking DESPISE semicolons
+}
     else {
       uartcharacterplacement("\r\nthat command isnt real!\r\n");
     }
