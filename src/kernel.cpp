@@ -52,20 +52,10 @@ void uart_init() {
 
   *gpio_afrl |= (1 << 8); // gpio alternate low register, actually nvm alternate low FUNCTION
 
-<<<<<<< HEAD
   *usart2_brr = 104; // uart with synchronous 2 baud rate register, prob // fixed the uhh brr needed to be smaller cuz less mhz
                      // something that has to do with uartttt
   *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg,
               // bro my rename to propfessionalize naming was so fucking shit
-||||||| 674bfba
-  *usart2_brr = 139; // uart with synchronous 2 baud rate register, prob
-                     // something that has to do with uartttt
-  *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg,
-              // bro my rename to propfessionalize naming was so fucking shit
-=======
-  *usart2_brr = 139; // uart with synchronous 2 baud rate register, prob something that has to do with uartttt
-  *usart2_cr1 |= (1 << 3) | (1 << 2) | (1 << 0); // gl to you in life if you are reading this, anyways control reg  // bro my rename to propfessionalize naming was so fucking shit
->>>>>>> 0b27f9c27a3e3ac48ec4f1378b562819b9505f6a
   *gpio_moder &= ~(3 << 6); // gpio mode register
   *gpio_moder |= (2 << 6);  // 2x
   *gpio_afrl |= (1 << 12);  // hm
@@ -74,7 +64,7 @@ void uart_init() {
 void pleaseputacharacter(char okillputacharacter) {
   // *uartbos = okillputacharacter; this is so fucking stupid and i like half understand it maybe idk (this is what i said before switching to the other chip and now i dont understand it at fucking all!)
   while (!(*usart2_isr & (1 << 7))) { // this is probably something idk it sets bit :thumbsup: ok nvm it turns out // ittt reads a bit and isolates bit 7 for testing
-  } 
+  }
   *usart2_tdr = okillputacharacter;
 }
 
@@ -119,7 +109,7 @@ void typepls() {
   }
 }
 extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its not copypasted anymore! learned how to do basic c i guess...
-                             
+
 
   uart_init();
   uartcharacterplacement(
@@ -136,6 +126,6 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
   }
 
   // the while(1) part is entirely copied because i do not understand c // this is not true anymore! hi so im back and 50 lines and 30 more mins! we have
-  // added uart input couple of hours for uart input, well not really probably like 30 mins again but like i split it many times 
-  // i passed river in 0.5x speed, ignore this, 15.09.2026 
+  // added uart input couple of hours for uart input, well not really probably like 30 mins again but like i split it many times
+  // i passed river in 0.5x speed, ignore this, 15.09.2026
 }
