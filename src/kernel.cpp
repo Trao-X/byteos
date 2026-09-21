@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "../include/strcmp.h"
 #include "../include/bfs.h"
-// byteos 1.5.5 armv6-m stm32g0 for byteos development board
+// byteos 1.6 armv6-m stm32g0 for byteos development board
 // the kernel is named bitnl (credits to .n.o.t.a. for that name)
 // last update reprofessionalizing since i decided i was immature 2 days ago
 // credits: v3x, osdev (credits for software used outside this file in other files)
@@ -14,6 +14,7 @@ volatile uint32_t *usart2_cr1 = (volatile uint32_t *)0x40004400;
 volatile uint32_t *usart2_brr = (volatile uint32_t *)0x4000440C;
 volatile uint32_t *usart2_isr = (volatile uint32_t *)0x4000441C; // inter status register
 volatile uint32_t *usart2_tdr = (volatile uint32_t *)0x40004428; // transmit data register
+volatile uint32_t *aircr = (volatile uint32_t *)0xE000ED0C;
 volatile uint32_t *nvic_iser = (volatile uint32_t *)0xE000E100; // iserrrr for the thing interruptsz
 // time to start on systrick gd reference
 volatile uint32_t *systrick_reload = (volatile uint32_t *)0xE000E014;
@@ -21,7 +22,6 @@ volatile uint32_t *systrick_current = (volatile uint32_t *)0xE000E018;
 volatile uint32_t *systrick_ctrl = (volatile uint32_t *)0xE000E010;
 // that was a FUCKTON of copy and pasting the hex
 
-// strcmp from embeddedartistry.github.io
 
 void uart_init() {
 
@@ -70,6 +70,9 @@ void uartcharacterplacement(const char *okillplaceit) {
 }
 
 void uint32tonumber(uint32_t number) {
+  if(number == 0) {
+    uartcharacterplacement("0");
+  }
   char table[11];
   int counter = 0;
   while(number != 0) {
@@ -86,6 +89,7 @@ void uint32tonumber(uint32_t number) {
   }
 }
 
+
 volatile uint32_t *usart2_rdr = (volatile uint32_t *)0x40004424; // recieve data register
 
 volatile char storag[64];
@@ -99,7 +103,7 @@ char givcharacter() {
   readindia = (readindia + 1) & 63;
   return okiassignedit;  // tuff
 }
-char maxinput[1024];
+char maxinput[256];
 int howmanycharacterscurrently = 0;
 
 void startanewterm() { uartcharacterplacement("\x1b[32mbyteW>\x1b[0m"); } // hacker green prompt
@@ -108,8 +112,10 @@ void copyshit(char* destination, const char* sourc) {
   while ((*destination++ = *sourc++));
 }
 
-char uparrowshit[1024];
-
+char uparrowshit[256];
+int lecounter = 0;
+int FUCKTHISBULLSHIT = 1;
+int lengthofuparrowshit = 0;
 
 void typepls() {
   while (1) {
@@ -117,8 +123,15 @@ void typepls() {
     if (userinputprobably == '\n' || userinputprobably == '\r') {
 
       maxinput[howmanycharacterscurrently] = '\0';
+      if(FUCKTHISBULLSHIT == 1) {
       copyshit(uparrowshit, maxinput);
+      }
       howmanycharacterscurrently = 0;
+      lecounter = 0;
+      lengthofuparrowshit = 0;
+      while(maxinput[lecounter] != '\0') {
+        lecounter++;
+      }
       return;
     }
     else if (userinputprobably == '\b' || userinputprobably == 0x7f) {
@@ -132,12 +145,20 @@ void typepls() {
     if (getinputig == '[')    {
     getinputig = givcharacter();
     if (getinputig == 'A') {
+    if(FUCKTHISBULLSHIT == 1) {
     uartcharacterplacement(uparrowshit);
+    lengthofuparrowshit = 0;
+    while(uparrowshit[lengthofuparrowshit] != '\0') {
+    lengthofuparrowshit++;
+      }
+    copyshit(maxinput, uparrowshit);
+    howmanycharacterscurrently = lengthofuparrowshit;
+    }
     }
     }
     }
 
-    else if (howmanycharacterscurrently < 1023) {
+    else if (howmanycharacterscurrently < 255) {
       maxinput[howmanycharacterscurrently] = userinputprobably;
       howmanycharacterscurrently++;
       pleaseputacharacter(userinputprobably);
@@ -159,61 +180,83 @@ int echolaid(const char* lllllline, const char* prefik) {
     }
     return 1;
 }
-
+int returnvalue; 
 extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its not copypasted anymore! learned how to do basic c i guess...
 
 
   uart_init();
   uartcharacterplacement(
-      "welcome to byteos 1.5.5 arm edition\r\n");
+      "welcome to byteos 1.6 arm edition\r\n");
   checkif();
   while (1) {
     startanewterm();
     typepls();
     if (strcmp(maxinput, "help") == 0) {
-      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear, uptime, echo, write, touch, cat, ls\r\n");
+      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear, uptime, echo, write, touch, cat, ls, rm, edit, panik, reboot\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.5.5 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.6 kernel: bitnl cpu: one of the stm32s probably!\r\n");
     }
     else if (strcmp(maxinput, "clear") ==  0) {
       uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
     }
-    else if(echolaid(maxinput, "touch ") == 1) {
-      uartcharacterplacement("\r\n");
-      createshit(maxinput + 6);
-      uartcharacterplacement("\r\n");
-      saveshit();
+    else if (strcmp(maxinput, "") ==  0) {
+        uartcharacterplacement("\r\n");
     }
+    else if(echolaid(maxinput, "touch ") == 1) {
+      nameofshit = 6;
+      if(maxinput[nameofshit] == '\0') {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("THE FILENAME CANNOT BE FUCKING EMPTY ARE YOU STUPID");
+        uartcharacterplacement("\r\n");
+
+      }
+      else {
+      uartcharacterplacement("\r\n");
+      returnvalue = createshit(maxinput + nameofshit);
+      uartcharacterplacement("\r\n");
+              if(returnvalue == 1) {
+      saveshit();
+              }
+              }
+    }
+
     else if (strcmp(maxinput, "ls") == 0) {
       listshit();
     }
     else if (echolaid(maxinput, "cat ") == 1) {
-        int forreadingshit;
-        forreadingshit = findshit(maxinput + 4);
-        if(forreadingshit == -1) {
-          uartcharacterplacement("\r\n");
-          uartcharacterplacement("you didnt make the file bro");
-          uartcharacterplacement("\r\n");
-        }
-        else {
-          uartcharacterplacement("\r\n");
-          uartcharacterplacement(shit[forreadingshit].doomscroll);
-          uartcharacterplacement("\r\n");
-        }
+      nameofshit = 4;
+      readshit();
     }
     else if (echolaid(maxinput, "write ") == 1) {
-      writeshit();
+      nameofshit = 6;
+      FUCKTHISBULLSHIT = 0;
+      returnvalue = writeshit();
+      FUCKTHISBULLSHIT = 1;
+              if(returnvalue == 1) {
       saveshit();
+              }
  // this is fucking evil bro
+      }
+      else if (strcmp(maxinput, "reboot") == 0) {
+        *aircr = (0x5FAu << 16) | (1u << 2);
+        uartcharacterplacement("\r\n");
+      } 
+      else if (echolaid(maxinput, "rm ") == 1) {
+        nameofshit = 3;
+        returnvalue = removeshit();
+        if(returnvalue == 1) {
+        saveshit();
+        }
+        uartcharacterplacement("\r\n");
       }
     else if (strcmp(maxinput, "uptime") == 0) {
       uartcharacterplacement("\nthe uptime iss "); // this better fucking work OR FUCKINE ELSE
-      if(tiks < 60000) {
+      if(tiks <= 60000) {
       uint32tonumber(tiks / 1000);
       uartcharacterplacement("s");
       }
-      else if (tiks > 60000) {
+      else if (tiks >= 60000) {
         uint32tonumber((tiks / 1000) / 60);
         uartcharacterplacement("m");
       }
@@ -225,13 +268,36 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
       uartcharacterplacement(maxinput + 5);
       uartcharacterplacement("\r\n"); // i fucking DESPISE semicolons
 }
+  else if (strcmp(maxinput, "panik") == 0) {
+    __asm volatile ("udf #0");
+  }
+  else if (echolaid(maxinput, "edit ") == 1) {
+    nameofshit = 5;
+    if(findshit(maxinput + 5) == -1) {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("\r\n");
+      }
+      else {
+    uartcharacterplacement("\r\n");
+    uartcharacterplacement("current file contents: ");
+    readshit();
+    uartcharacterplacement("\r\n");
+    uartcharacterplacement("what do you want in the file?");
+    FUCKTHISBULLSHIT = 0;
+    returnvalue = writeshit();
+    FUCKTHISBULLSHIT = 1;
+      if(returnvalue == 1) {
+    saveshit();
+      }
+    
+      }
+  }
     else {
       uartcharacterplacement("\r\nthat command isnt real!\r\n");
     }
+    
   }
 }
 // FUCK PCPCPPCPCPCPCPCPCPC
-//YESSS IT WORKED
-  // added uart input couple of hours for uart input, well not really probably like 30 mins again but like i split it many times
-  // i passed river in 0.5x speed, ignore this, 15.09.2026
-
+// YESSS IT WORKED

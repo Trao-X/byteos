@@ -1,16 +1,21 @@
 #pragma once
 
 int findshit(const char* forfindingshit);
-void createshit(const char* shitforcreating);
+int createshit(const char* shitforcreating);
 void listshit();
-void writeshit();
+int writeshit();
 void checkif();
 void saveshit();
 void loadshit();
+int readshit();
+int removeshit();
 struct filings {
-    char namings[32];
+    char namings[256];
     char doomscroll[256];
     int sizeofdoomscroll;
     bool ifusedornotused;
 }; 
 extern filings shit[15];
+extern int nameofshit;
+extern int forwritingshit;
+extern int forremovingshit;

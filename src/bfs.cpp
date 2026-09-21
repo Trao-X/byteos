@@ -1,16 +1,15 @@
 // byte file system
 // designed for byteOS arm edition
-// ver 2.0.0
+// ver 3.0.0
 
 #include <stdint.h>
 #include "../include/strcmp.h"
 #include "../include/kernel.h"
 #include "../include/bfs.h"
+    int nameofshit; 
+    int forwritingshit;
+    int forremovingshit;
 
-    char namings[32];
-    char doomscroll[256];
-    int sizeofdoomscroll;
-    bool ifusedornotused;
 
 filings shit[15];
 
@@ -73,7 +72,7 @@ void saveshit() {
     uint32_t *tastyshit = (uint32_t *)shit;
     int rottenshit = 0;
     bfsflashings[0] = 0x42465331;
-    bfsflashings[1] = 1;
+    bfsflashings[1] = 3;
     while((*flashsr & (1u << 16)) == 65536) {
         }
     while (rottenshit < (sizeof(shit) / sizeof(uint32_t))) {
@@ -98,7 +97,8 @@ void loadshit() {
 }
 
 
-void createshit(const char* shitforcreating) {
+int createshit(const char* shitforcreating) {
+    if(findshit(shitforcreating) == -1) {
 if(shit[0].ifusedornotused == false) {
     copyshit2(shit[0].namings, shitforcreating);
     shit[0].sizeofdoomscroll = 0;
@@ -173,8 +173,28 @@ if(shit[0].ifusedornotused == false) {
     copyshit2(shit[14].namings, shitforcreating);
     shit[14].sizeofdoomscroll = 0;
     shit[14].ifusedornotused = true;
-                                                        }
-                                                    } // fuck for loops
+
+                                                    }
+                                                
+                                                            else {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("filesystem full");
+        uartcharacterplacement("\r\n");
+        return 0;
+    }
+    return 1;
+}
+
+
+                                                     // fuck for loops
+                                                    else {
+                                                        uartcharacterplacement("\r\n");
+                                                        uartcharacterplacement("file already exists");
+                                                        uartcharacterplacement("\r\n");
+                                                                return 0;
+                                                    }
+                                                }
+
 
     int findshit(const char* forfindingshit) {
         int forfindingshit2;
@@ -189,6 +209,7 @@ if(shit[0].ifusedornotused == false) {
         }
         return -1;
     }
+    
 
     void listshit() {
         int forlistingshit;
@@ -207,28 +228,71 @@ if(shit[0].ifusedornotused == false) {
 
     void checkif() {
         if(bfsflashings[0] == 0x42465331) {
+            if(bfsflashings[1] == 3) {
             loadshit();
+            }
+            else {
+            uartcharacterplacement("old/new/invalid fs version, making new fs");
+            uartcharacterplacement("\r\n");
+            saveshit();  
+            }
         }
         else {
             uartcharacterplacement(" no/invalid fs, making new fs");
             uartcharacterplacement("\r\n");
+            saveshit();
         }
     }
 
-
-    void writeshit() {
-    int forwritingshit;
-      forwritingshit = findshit(maxinput + 6); 
+    int writeshit() {
+      forwritingshit = findshit(maxinput + nameofshit); 
       if(forwritingshit == -1) {
         uartcharacterplacement("\r\n");
         uartcharacterplacement("you didnt make the file bro");
         uartcharacterplacement("\r\n");
+        return 0;
       }
       else {
         uartcharacterplacement("\r\n");
         uartcharacterplacement("enter shit: ");
         typepls();
+        shit[forwritingshit].sizeofdoomscroll = lecounter;
         uartcharacterplacement("\r\n");
         copyshit2(shit[forwritingshit].doomscroll, maxinput);
+        return 1;
     }
+    }
+
+    int readshit() {
+        int forreadingshit;
+        forreadingshit = findshit(maxinput + nameofshit);
+        if(forreadingshit == -1) {
+          uartcharacterplacement("\r\n");
+          uartcharacterplacement("you didnt make the file bro");
+          uartcharacterplacement("\r\n");
+          return 0;
+        }
+        else {
+          uartcharacterplacement("\r\n");
+          uartcharacterplacement(shit[forreadingshit].doomscroll);
+          uartcharacterplacement("\r\n");
+          return 1;
+        }
+    }
+
+    int removeshit() {
+        forremovingshit = findshit(maxinput + nameofshit);
+      if(forremovingshit == -1) {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("\r\n");
+        return 0;
+      }
+      else {
+    shit[forremovingshit].ifusedornotused = false;
+    shit[forremovingshit].sizeofdoomscroll = 0;
+    shit[forremovingshit].doomscroll[0] = '\0';
+        return 1;
+      }
+
     }
