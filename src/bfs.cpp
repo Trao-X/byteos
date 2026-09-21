@@ -1,6 +1,6 @@
 // byte file system
 // designed for byteOS arm edition
-// ver 1.0.0
+// ver 2.0.0
 
 #include <stdint.h>
 #include "../include/strcmp.h"
@@ -18,6 +18,84 @@ void copyshit2(char* destination, const char* sourc) {
   while ((*destination++ = *sourc++));
 }
 
+volatile uint32_t *bfsflashings = (volatile uint32_t *)0x08006000;
+volatile uint32_t *flashkeyr = (volatile uint32_t *)0x40022008;
+volatile uint32_t *flashsr = (volatile uint32_t *)0x40022010;
+volatile uint32_t *flashcr = (volatile uint32_t *)0x40022014;
+
+
+void flashingsunlockings() {
+*flashkeyr = 0x45670123;
+*flashkeyr = 0xCDEF89AB;
+if ((*flashcr & (1u << 31)) == 0) { // this is some fucking bullshit
+    while((*flashsr & (1u << 16)) == 65536) {
+   }
+    *flashcr &= ~(0x3FFu << 3);
+   *flashcr |= (1u << 1); 
+    *flashcr |= (12u << 3); 
+    *flashcr |= (1u << 16); 
+    while((*flashsr & (1u << 16)) == 65536) {
+    }
+    *flashcr &= ~(1u << 1); 
+        while((*flashsr & (1u << 16)) == 65536) {
+   }
+    *flashcr &= ~(0x3FFu << 3);
+   *flashcr |= (1u << 1); 
+    *flashcr |= (13u << 3); 
+    *flashcr |= (1u << 16); 
+    while((*flashsr & (1u << 16)) == 65536) {
+    }
+    *flashcr &= ~(1u << 1); 
+        while((*flashsr & (1u << 16)) == 65536) {
+   }
+    *flashcr &= ~(0x3FFu << 3);
+   *flashcr |= (1u << 1); 
+    *flashcr |= (14u << 3); 
+    *flashcr |= (1u << 16); 
+    while((*flashsr & (1u << 16)) == 65536) {
+    }
+    *flashcr &= ~(1u << 1); 
+        while((*flashsr & (1u << 16)) == 65536) {
+        }
+    *flashcr &= ~(0x3FFu << 3);
+   *flashcr |= (1u << 1); 
+    *flashcr |= (15u << 3); 
+    *flashcr |= (1u << 16); 
+    while((*flashsr & (1u << 16)) == 65536) {
+    }
+    *flashcr &= ~(1u << 1); 
+}
+}
+
+void saveshit() {
+    flashingsunlockings();
+    *flashcr |= (1u << 0);
+    uint32_t *tastyshit = (uint32_t *)shit;
+    int rottenshit = 0;
+    bfsflashings[0] = 0x42465331;
+    bfsflashings[1] = 1;
+    while((*flashsr & (1u << 16)) == 65536) {
+        }
+    while (rottenshit < (sizeof(shit) / sizeof(uint32_t))) {
+    bfsflashings[rottenshit + 2] = tastyshit[rottenshit];
+    bfsflashings[rottenshit + 3] = tastyshit[rottenshit + 1];
+    while ((*flashsr & (1u << 16)) != 0) {
+    }
+    rottenshit += 2;
+}
+*flashcr &= ~(1u << 0);
+}
+
+
+void loadshit() {
+    uint32_t *tastyshit2  = (uint32_t *)shit;
+    int simonsscatfetish = 0;
+    while (simonsscatfetish < (sizeof(shit) / sizeof(uint32_t))) {
+        tastyshit2[simonsscatfetish] = bfsflashings[simonsscatfetish + 2];
+        simonsscatfetish++;
+    }
+
+}
 
 
 void createshit(const char* shitforcreating) {
@@ -125,4 +203,32 @@ if(shit[0].ifusedornotused == false) {
         }
         
 
+    }
+
+    void checkif() {
+        if(bfsflashings[0] == 0x42465331) {
+            loadshit();
+        }
+        else {
+            uartcharacterplacement(" no/invalid fs, making new fs");
+            uartcharacterplacement("\r\n");
+        }
+    }
+
+
+    void writeshit() {
+    int forwritingshit;
+      forwritingshit = findshit(maxinput + 6); 
+      if(forwritingshit == -1) {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("\r\n");
+      }
+      else {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("enter shit: ");
+        typepls();
+        uartcharacterplacement("\r\n");
+        copyshit2(shit[forwritingshit].doomscroll, maxinput);
+    }
     }
