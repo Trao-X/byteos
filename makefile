@@ -16,8 +16,11 @@ kernel.o: src/kernel.cpp
 startup.o: src/startup.cpp
 	$(CXX) $(FLAGS) -c src/startup.cpp -o startup.o
 
-byteos.elf: startup.o kernel.o strcmp.o linker.ld
-	$(CXX) -nostdlib -mcpu=cortex-m0plus -mthumb -T linker.ld startup.o kernel.o strcmp.o -lgcc -o byteos.elf
+bfs.o: src/bfs.cpp
+	$(CXX) $(FLAGS) -c src/bfs.cpp -o bfs.o
+
+byteos.elf: startup.o kernel.o strcmp.o bfs.o linker.ld
+	$(CXX) -nostdlib -mcpu=cortex-m0plus -mthumb -T linker.ld startup.o kernel.o strcmp.o bfs.o -lgcc -o byteos.elf
 
 byteos.bin: byteos.elf
 	$(OBJCOPY) -O binary byteos.elf byteos.bin

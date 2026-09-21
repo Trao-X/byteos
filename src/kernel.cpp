@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "../include/strcmp.h"
-// byteos 1.3.1 armv6-m stm32g0 for byteos development board
+#include "../include/bfs.h"
+// byteos 1.5 armv6-m stm32g0 for byteos development board
 // the kernel is named bitnl (credits to .n.o.t.a. for that name)
 // last update reprofessionalizing since i decided i was immature 2 days ago
 // credits: v3x, osdev (credits for software used outside this file in other files)
@@ -164,19 +165,58 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
 
   uart_init();
   uartcharacterplacement(
-      "welcome to byteos 1.3.1 designed for byte dev board\r\n");
+      "welcome to byteos 1.5 arm edition\r\n");
   while (1) {
     startanewterm();
     typepls();
     if (strcmp(maxinput, "help") == 0) {
-      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear, uptime, echo\r\n");
+      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear, uptime, echo, write, touch, cat, ls\r\n");
     }
     else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.3.1 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+      uartcharacterplacement("\r\nos: byteos 1.5 kernel: bitnl cpu: one of the stm32s probably!\r\n");
     }
     else if (strcmp(maxinput, "clear") ==  0) {
       uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
     }
+    else if(echolaid(maxinput, "touch ") == 1) {
+      uartcharacterplacement("\r\n");
+      createshit(maxinput + 6);
+      uartcharacterplacement("\r\n");
+    }
+    else if (strcmp(maxinput, "ls") == 0) {
+      listshit();
+    }
+    else if (echolaid(maxinput, "cat ") == 1) {
+        int forreadingshit;
+        forreadingshit = findshit(maxinput + 4);
+        if(forreadingshit == -1) {
+          uartcharacterplacement("\r\n");
+          uartcharacterplacement("you didnt make the file bro");
+          uartcharacterplacement("\r\n");
+        }
+        else {
+          uartcharacterplacement("\r\n");
+          uartcharacterplacement(shit[forreadingshit].doomscroll);
+          uartcharacterplacement("\r\n");
+        }
+    }
+    else if (echolaid(maxinput, "write ") == 1) {
+      int forwritingshit;
+      forwritingshit = findshit(maxinput + 6); 
+      if(forwritingshit == -1) {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("\r\n");
+      }
+      else {
+        uartcharacterplacement("\r\n");
+        uartcharacterplacement("enter shit: ");
+        typepls();
+        uartcharacterplacement("\r\n");
+        copyshit(shit[forwritingshit].doomscroll, maxinput);
+ // this is fucking evil bro
+      }
+    } 
     else if (strcmp(maxinput, "uptime") == 0) {
       uartcharacterplacement("\nthe uptime iss "); // this better fucking work OR FUCKINE ELSE
       if(tiks < 60000) {
@@ -201,9 +241,6 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
   }
 // FUCK PCPCPPCPCPCPCPCPCPC
 //YESSS IT WORKED
-
-
-  // the while(1) part is entirely copied because i do not understand c // this is not true anymore! hi so im back and 50 lines and 30 more mins! we have
   // added uart input couple of hours for uart input, well not really probably like 30 mins again but like i split it many times
   // i passed river in 0.5x speed, ignore this, 15.09.2026
 }
