@@ -4,8 +4,9 @@
 ENTRY(plshandletheresetsalrthx) /* pointless ass shit */
 
 MEMORY {
-    FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 32K
+    FLASH : ORIGIN = 0x08000000, LENGTH = 24K
     RAM  (rwx)  : ORIGIN = 0x20000000, LENGTH = 12K /* fixed ram/flash size cuz was outdated iggg */
+    BFSFLASHINGS : ORIGIN = 0x08006000, LENGTH = 8k
 }
 
 _endoflestack = ORIGIN(RAM) + LENGTH(RAM);
