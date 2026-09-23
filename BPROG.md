@@ -53,5 +53,3 @@ This will not:
 `execute(commands) echo hi; output(uart) bye`
 
 This is because, instead of running `echo hi` and `output(uart) bye`, it will run `echo hi` and ` output(uart) bye` with a space at the start.
-
-Looks like you read it, good boy~
