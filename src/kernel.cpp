@@ -1,10 +1,12 @@
+// byte Operating System 2.0 (informally byteOS) designed for byteos development board (armv6-m stm32g0) 
+// BITNL 2.0
+// credits: v3x, osdev (credits for software used outside this file in other files)
+
 #include <stdint.h>
 #include "../include/strcmp.h"
 #include "../include/bfs.h"
-// byteos 1.6 armv6-m stm32g0 for byteos development board
-// the kernel is named bitnl (credits to .n.o.t.a. for that name)
-// last update reprofessionalizing since i decided i was immature 2 days ago
-// credits: v3x, osdev (credits for software used outside this file in other files)
+#include "../include/bprog.h"
+
 
 volatile uint32_t *rcc_iopenr = (volatile uint32_t *)0x40021034;
 volatile uint32_t *rcc_apbenr1 = (volatile uint32_t *)0x4002103C;
@@ -20,8 +22,11 @@ volatile uint32_t *nvic_iser = (volatile uint32_t *)0xE000E100; // iserrrr for t
 volatile uint32_t *systrick_reload = (volatile uint32_t *)0xE000E014;
 volatile uint32_t *systrick_current = (volatile uint32_t *)0xE000E018;
 volatile uint32_t *systrick_ctrl = (volatile uint32_t *)0xE000E010;
+volatile uint32_t *mcureader = (volatile uint32_t *)0x40015800;
+extern uint32_t _bss_start, _bss_end;
 // that was a FUCKTON of copy and pasting the hex
 
+const char* comans;
 
 void uart_init() {
 
@@ -146,11 +151,15 @@ void typepls() {
     getinputig = givcharacter();
     if (getinputig == 'A') {
     if(FUCKTHISBULLSHIT == 1) {
-    uartcharacterplacement(uparrowshit);
     lengthofuparrowshit = 0;
     while(uparrowshit[lengthofuparrowshit] != '\0') {
     lengthofuparrowshit++;
       }
+    while(howmanycharacterscurrently != 0) {
+    uartcharacterplacement("\b \b");
+    howmanycharacterscurrently--; 
+    }
+      uartcharacterplacement(uparrowshit);
     copyshit(maxinput, uparrowshit);
     howmanycharacterscurrently = lengthofuparrowshit;
     }
@@ -164,7 +173,8 @@ void typepls() {
       pleaseputacharacter(userinputprobably);
     }
     else {
-      uartcharacterplacement("stop trying to overflow the kernel, you now may not use the terminal anymore");
+      uartcharacterplacement("OVERFLOW ERROR, PANIC! (easteregg)");
+      __asm volatile ("udf #0");
     }
   }
 }
@@ -181,54 +191,91 @@ int echolaid(const char* lllllline, const char* prefik) {
     return 1;
 }
 int returnvalue; 
-extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its not copypasted anymore! learned how to do basic c i guess...
 
 
-  uart_init();
-  uartcharacterplacement(
-      "welcome to byteos 1.6 arm edition\r\n");
-  checkif();
-  while (1) {
-    startanewterm();
-    typepls();
-    if (strcmp(maxinput, "help") == 0) {
-      uartcharacterplacement("\r\nok so the current commands are: help, neofetch, clear, uptime, echo, write, touch, cat, ls, rm, edit, panik, reboot\r\n");
+  void termcommandsssss() {
+    if (strcmp(comans, "help") == 0) {
+      uartcharacterplacement("\r\nCommands: help, neofetch, clear, uptime, echo, write (BFS), touch (BFS), cat (BFS), ls (BFS), rm (BFS), edit (BFS), panik, reboot, run (bProg), printmcuid\r\n");
     }
-    else if (strcmp(maxinput, "neofetch") == 0) {
-      uartcharacterplacement("\r\nos: byteos 1.6 kernel: bitnl cpu: one of the stm32s probably!\r\n");
+    else if (strcmp(comans, "neofetch") == 0) {
+      uint32_t msp;
+      __asm volatile ("mrs %0, msp" : "=r" (msp));
+      uartcharacterplacement("\r\nOS: byteOS \r\nBuild: 2.0 \r\nKernel: BitNL 2.0 \r\nRAM: ");
+      uintptr_t bieses = reinterpret_cast<uintptr_t>(&_bss_end);
+      uint32tonumber(msp - bieses);
+      uartcharacterplacement(" bytes\r\n");
+      uartcharacterplacement("MCU: ");
+      if((*mcureader & 0x00000FFF) == 0x460) {
+        uartcharacterplacement("STM32G070xx");
+      }
+      else if((*mcureader & 0x00000FFF) == 0x456) {
+        uartcharacterplacement("STM32G050xx");
+      }
+      else if((*mcureader & 0x00000FFF) == 0x466) {
+        uartcharacterplacement("STM32G0B0xx");
+      }
+      else if((*mcureader & 0x00000FFF) == 0x467) {
+        uartcharacterplacement("STM32G030xx");
+      }
+      else if((*mcureader & 0x00000FFF) == 0x000) {
+        uartcharacterplacement("Renode/Unrecognized MCU");
+      }      
+      else {
+        uartcharacterplacement("Unrecognized MCU!");
+      }
+      uartcharacterplacement("\r\nvthreex 2026, byte Incorporated\r\n");
     }
-    else if (strcmp(maxinput, "clear") ==  0) {
+    else if (strcmp(comans, "clear") ==  0) {
       uartcharacterplacement("\x1b[2J\x1b[H"); // idk why is it in characters but still its kinda cool
     }
-    else if (strcmp(maxinput, "") ==  0) {
+    else if (strcmp(comans, "") ==  0) {
         uartcharacterplacement("\r\n");
     }
-    else if(echolaid(maxinput, "touch ") == 1) {
+    else if(echolaid(comans, "touch ") == 1) {
       nameofshit = 6;
-      if(maxinput[nameofshit] == '\0') {
+      if(comans[nameofshit] == '\0') {
         uartcharacterplacement("\r\n");
-        uartcharacterplacement("THE FILENAME CANNOT BE FUCKING EMPTY ARE YOU STUPID");
+        uartcharacterplacement("Filename cannot be empty!");
         uartcharacterplacement("\r\n");
 
       }
       else {
-      uartcharacterplacement("\r\n");
-      returnvalue = createshit(maxinput + nameofshit);
+      returnvalue = createshit(comans + nameofshit);
       uartcharacterplacement("\r\n");
               if(returnvalue == 1) {
       saveshit();
               }
-              }
-    }
+            }
+          }
+      
+      else if(strcmp(comans, "printmcuid") == 0) {
+        uartcharacterplacement("\r\n");
+        uint32tonumber(*mcureader & 0xFFF);
+        uartcharacterplacement("\r\n");
+      }
+  
 
-    else if (strcmp(maxinput, "ls") == 0) {
-      listshit();
+    else if (strcmp(comans, "ls") ==  0) {
+      listshit(0);
+      }
+
+    else if (echolaid(comans, "ls ") == 1) {
+      if(strcmp(comans + 3, "-l") == 0) {
+        listshit(1);
+      }
+      else {
+        listshit(0);
     }
-    else if (echolaid(maxinput, "cat ") == 1) {
+  }
+    else if (echolaid(comans, "cat ") == 1) {
       nameofshit = 4;
       readshit();
     }
-    else if (echolaid(maxinput, "write ") == 1) {
+    else if (echolaid(comans, "run ")) {
+      nameofshit = 4;
+      bprogprint(comans + 4);
+      }
+    else if (echolaid(comans, "write ") == 1) {
       nameofshit = 6;
       FUCKTHISBULLSHIT = 0;
       returnvalue = writeshit();
@@ -238,11 +285,11 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
               }
  // this is fucking evil bro
       }
-      else if (strcmp(maxinput, "reboot") == 0) {
+      else if (strcmp(comans, "reboot") == 0) {
         *aircr = (0x5FAu << 16) | (1u << 2);
         uartcharacterplacement("\r\n");
       } 
-      else if (echolaid(maxinput, "rm ") == 1) {
+      else if (echolaid(comans, "rm ") == 1) {
         nameofshit = 3;
         returnvalue = removeshit();
         if(returnvalue == 1) {
@@ -250,8 +297,8 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
         }
         uartcharacterplacement("\r\n");
       }
-    else if (strcmp(maxinput, "uptime") == 0) {
-      uartcharacterplacement("\nthe uptime iss "); // this better fucking work OR FUCKINE ELSE
+    else if (strcmp(comans, "uptime") == 0) {
+      uartcharacterplacement("\nUptime: "); // this better fucking work OR FUCKINE ELSE
       if(tiks <= 60000) {
       uint32tonumber(tiks / 1000);
       uartcharacterplacement("s");
@@ -263,27 +310,27 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
 
       uartcharacterplacement("\r\n"); // now i have FUCKING LINKER ERRORS IM GONNA HAVE AFUCKING MENTAL BREAKDOWN
  } // IM FUCKING ENDING IT IT DIDNT BOOT
-    else if (echolaid(maxinput, "echo ") == 1) {
+    else if (echolaid(comans, "echo ") == 1) {
       uartcharacterplacement("\r\n");
-      uartcharacterplacement(maxinput + 5);
+      uartcharacterplacement(comans + 5);
       uartcharacterplacement("\r\n"); // i fucking DESPISE semicolons
 }
-  else if (strcmp(maxinput, "panik") == 0) {
+  else if (strcmp(comans, "panik") == 0) {
     __asm volatile ("udf #0");
   }
-  else if (echolaid(maxinput, "edit ") == 1) {
+  else if (echolaid(comans, "edit ") == 1) {
     nameofshit = 5;
-    if(findshit(maxinput + 5) == -1) {
+    if(findshit(comans + 5) == -1) {
         uartcharacterplacement("\r\n");
-        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("Invalid file!");
         uartcharacterplacement("\r\n");
       }
       else {
     uartcharacterplacement("\r\n");
-    uartcharacterplacement("current file contents: ");
+    uartcharacterplacement("Current file contents: ");
     readshit();
     uartcharacterplacement("\r\n");
-    uartcharacterplacement("what do you want in the file?");
+    uartcharacterplacement("Changes:");
     FUCKTHISBULLSHIT = 0;
     returnvalue = writeshit();
     FUCKTHISBULLSHIT = 1;
@@ -294,10 +341,24 @@ extern "C" void boskernel() { // copy pasted idk how to call c but yea ig its no
       }
   }
     else {
-      uartcharacterplacement("\r\nthat command isnt real!\r\n");
+      uartcharacterplacement("\r\nNot implemented.\r\n");
     }
-    
-  }
+    }
+
+extern "C" void boskernel() { 
+  uart_init();
+  uartcharacterplacement(
+      "Welcome to byteOS 2.0!\r\n");
+  checkif();
+  while(1) {
+    startanewterm();
+    typepls();
+    comans = maxinput;
+    termcommandsssss();
 }
+}
+
+
+
 // FUCK PCPCPPCPCPCPCPCPCPC
 // YESSS IT WORKED

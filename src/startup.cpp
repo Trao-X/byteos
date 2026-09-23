@@ -1,4 +1,9 @@
+// byte Startup Code designed for byteOS
+// credits: v3x, osdev (credits for software used outside this file in other files)
+
+
 #include <stdint.h>
+#include "../include/kernel.h"
 #define zero1 0
 #define zero2 zero1, 0
 #define zero3 zero2, 0
@@ -56,9 +61,29 @@ while (1) { }
 extern "C" void nonmaskable() {
     while(1);
 }
-extern "C" void hardfault() {
-    while(1);
+extern "C" __attribute__((naked)) void hardfault() {
+    __asm volatile (
+    "mrs r0, msp\n"
+    "b hardfault_shit\n"
+    );
 }
+
+extern "C" void hardfault_shit(uint32_t *stack) {
+            uint32_t personalcomputer = stack[6];
+            uint32_t elr = stack[5];
+            uartcharacterplacement("\r\n");         
+            uartcharacterplacement("Critical error: byteOS hardfault!");         
+            uartcharacterplacement("\r\n");
+            uartcharacterplacement("PC: ");
+            uint32tonumber(personalcomputer);
+            uartcharacterplacement("\r\n");
+            uartcharacterplacement("LR: ");
+            uint32tonumber(elr);
+            uartcharacterplacement("\r\n");
+        while(1);
+}
+
+
 
 // this is the first part of cpp i meaningfuly struggled on, fun!
 

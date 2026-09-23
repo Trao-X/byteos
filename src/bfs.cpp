@@ -1,6 +1,5 @@
-// byte file system
-// designed for byteOS arm edition
-// ver 3.0.0
+// byte File System 4.0 (informally byteFS/BFS) designed for byteOS
+// credits: v3x, osdev (credits for software used outside this file in other files)
 
 #include <stdint.h>
 #include "../include/strcmp.h"
@@ -9,6 +8,7 @@
     int nameofshit; 
     int forwritingshit;
     int forremovingshit;
+    int forlistingshit;
 
 
 filings shit[15];
@@ -72,7 +72,7 @@ void saveshit() {
     uint32_t *tastyshit = (uint32_t *)shit;
     int rottenshit = 0;
     bfsflashings[0] = 0x42465331;
-    bfsflashings[1] = 3;
+    bfsflashings[1] = 4;
     while((*flashsr & (1u << 16)) == 65536) {
         }
     while (rottenshit < (sizeof(shit) / sizeof(uint32_t))) {
@@ -178,7 +178,7 @@ if(shit[0].ifusedornotused == false) {
                                                 
                                                             else {
         uartcharacterplacement("\r\n");
-        uartcharacterplacement("filesystem full");
+        uartcharacterplacement("Filesystem full!");
         uartcharacterplacement("\r\n");
         return 0;
     }
@@ -211,12 +211,11 @@ if(shit[0].ifusedornotused == false) {
     }
     
 
-    void listshit() {
-        int forlistingshit;
+    void listshit(int modesssst) {
+        if(modesssst == 0) {
         uartcharacterplacement("\r\n");
         for(forlistingshit = 0; forlistingshit < 15; forlistingshit++) {
             if(shit[forlistingshit].ifusedornotused == true) {
-                uartcharacterplacement("\r\n");
                 uartcharacterplacement(shit[forlistingshit].namings);
                 uartcharacterplacement("\r\n");
             }
@@ -224,51 +223,67 @@ if(shit[0].ifusedornotused == false) {
         }
         
 
+
     }
+        else if(modesssst == 1) {
+                    uartcharacterplacement("\r\n");
+        for(forlistingshit = 0; forlistingshit < 15; forlistingshit++) {
+            if(shit[forlistingshit].ifusedornotused == true) {
+                uartcharacterplacement(shit[forlistingshit].namings);
+                uartcharacterplacement(",");
+                uartcharacterplacement(" ");
+                uint32tonumber(shit[forlistingshit].sizeofdoomscroll);
+                uartcharacterplacement(" bytes");
+                uartcharacterplacement("\r\n");
+        }
+
+        }
+    }
+}
 
     void checkif() {
         if(bfsflashings[0] == 0x42465331) {
-            if(bfsflashings[1] == 3) {
+            if(bfsflashings[1] == 4) {
             loadshit();
             }
             else {
-            uartcharacterplacement("old/new/invalid fs version, making new fs");
+            uartcharacterplacement("Incompatible filesystem version! Writing ByteFS 4.0");
             uartcharacterplacement("\r\n");
             saveshit();  
             }
         }
         else {
-            uartcharacterplacement(" no/invalid fs, making new fs");
+            uartcharacterplacement("Invalid filesystem, writing ByteFS 4.0...");
             uartcharacterplacement("\r\n");
             saveshit();
         }
     }
 
     int writeshit() {
-      forwritingshit = findshit(maxinput + nameofshit); 
+      forwritingshit = findshit(comans + nameofshit); 
       if(forwritingshit == -1) {
         uartcharacterplacement("\r\n");
-        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("Invalid file!");
         uartcharacterplacement("\r\n");
         return 0;
       }
       else {
         uartcharacterplacement("\r\n");
-        uartcharacterplacement("enter shit: ");
+        uartcharacterplacement("Edit: ");
         typepls();
         shit[forwritingshit].sizeofdoomscroll = lecounter;
         uartcharacterplacement("\r\n");
-        copyshit2(shit[forwritingshit].doomscroll, maxinput);
+        copyshit2(shit[forwritingshit].doomscroll, comans);
         return 1;
     }
     }
 
     int readshit() {
         int forreadingshit;
-        forreadingshit = findshit(maxinput + nameofshit);
+        forreadingshit = findshit(comans + nameofshit);
         if(forreadingshit == -1) {
           uartcharacterplacement("\r\n");
-          uartcharacterplacement("you didnt make the file bro");
+          uartcharacterplacement("Invalid file!");
           uartcharacterplacement("\r\n");
           return 0;
         }
@@ -281,10 +296,10 @@ if(shit[0].ifusedornotused == false) {
     }
 
     int removeshit() {
-        forremovingshit = findshit(maxinput + nameofshit);
+        forremovingshit = findshit(comans + nameofshit);
       if(forremovingshit == -1) {
         uartcharacterplacement("\r\n");
-        uartcharacterplacement("you didnt make the file bro");
+        uartcharacterplacement("Invalid file!");
         uartcharacterplacement("\r\n");
         return 0;
       }
